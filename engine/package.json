@@ -1,0 +1,22 @@
+{
+  "name": "engine",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.7",
+    "express": "^4.21.1",
+    "redis": "^4.7.0"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun x tsc",
+    "start": "bun run dist/index.js"
+  }
+}
