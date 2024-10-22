@@ -1,16 +1,27 @@
+// routes/userRoutes.ts
 import express from 'express';
-import { client } from '../index';
+import { RedisManager } from '../RedisManager';
 
-const  router = express.Router();
+const router = express.Router();
 
-router.post('/create/:userId',async (req, res) => {
-    const { userId } = req.params;
-    console.log(userId);
-    const data = JSON.stringify({userId,type:"createUser"})
-    await client.lPush("engine", data)
-    return
-    // res.json({message: "User creation pending"})
+
+router.post('/create/:userId', async (req, res) => {
+    try {
+        const response: any = await RedisManager(
+            { userId: req.params.userId, type: "createUser" },
+            "createUser"
+        );
+        
+        if (response.status === 200) {
+            res.status(201).json({ message: `User ${req.params.userId} created` });
+        } else {
+            res.status(400).json({ message: `User already exists` });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : "Request failed" });
+    }
 });
 
 
-export default router; 
+
+export default router;

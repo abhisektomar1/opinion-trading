@@ -2,11 +2,7 @@ export let INR_BALANCES = {};
 export let ORDERBOOK = {};
 export let STOCK_BALANCES = {};
 
-export function createUser(userId) {
-    if (!INR_BALANCES[userId]) {
-        INR_BALANCES[userId] = { balance: 0, locked: 0 };
-    }
-}
+
 
 export function createSymbol(stockSymbol) {
     if (!ORDERBOOK[stockSymbol]) {

@@ -3,18 +3,29 @@ import { createClient } from "redis";
 import userRoutes from "./routes/userRoutes"
 import orderRoutes from "./routes/orderRoutes"
 import bodyParser from 'body-parser';
+import { RedisManager } from "./RedisManager";
 
 const app = express();
 app.use(bodyParser.json())
 const port = 3000;
 
-//redis
-export const client = createClient();
-client.on('error', (err) => console.log('Redis Client Error', err));
+export const client = createClient({
+    name: 'main-client'
+});
+
+export const pubSub = client.duplicate();
+
+client.on('error', (err) => console.log('Redis Main Client Error', err));
+pubSub.on('error', (err) => console.log('Redis PubSub Client Error', err));
+
+let isConnected = false;
 
 async function startServer() {
     try {
         await client.connect();
+        await pubSub.connect();
+        
+        isConnected = true;
         console.log("Connected to Redis");
 
         app.listen(port, () => {
@@ -22,23 +33,50 @@ async function startServer() {
         });
     } catch (error) {
         console.error("Failed to connect to Redis", error);
+        process.exit(1); 
     }
 }
 
-startServer();
+const checkRedisConnection = (req: Request, res: Response, next: Function) => {
+    if (!isConnected) {
+        return res.status(503).json({ message: "Service unavailable - Redis not connected" });
+    }
+    next();
+};
 
+//@ts-ignore
+app.use(checkRedisConnection);
+
+// Routes
 app.use('/user', userRoutes);
 app.use('/order', orderRoutes);
 
 app.post('/symbol/create/:stockSymbol', async (req, res) => {
     const { stockSymbol } = req.params;
-    const data = JSON.stringify({stockSymbol,type:"createStockSymbol"})
-    await client.lPush("engine", data)
-    return
+    try {
+        const response: any = await RedisManager(
+            { stockSymbol: stockSymbol, type: "createStockSymbol" },
+            "createStockSymbol"
+        );
+        if (response.status === 200) {
+            res.status(201).json({ message: `Symbol created` });
+        } else {
+            res.status(400).json({ message: `Symbol already exists` });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to queue symbol creation request" });
+    }
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, Express with Bun and TypeScript!");
+    res.send("Hello, Express with Bun and TypeScript!");
 });
 
+startServer();
 
+process.on('SIGTERM', async () => {
+    console.log('Shutting down...');
+    await client.quit();
+    await pubSub.quit();
+    process.exit(0);
+});
