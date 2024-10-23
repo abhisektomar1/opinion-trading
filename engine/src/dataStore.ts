@@ -8,22 +8,22 @@ export const ORDERBOOK: OrderBook = {};
 
 
 
-// export function createSymbol(stockSymbol) {
-//     if (!ORDERBOOK[stockSymbol]) {
-//         ORDERBOOK[stockSymbol] = { yes: {}, no: {} };
-//     }
-// }
+export function createSymbol(stockSymbol) {
+    if (!ORDERBOOK[stockSymbol]) {
+        ORDERBOOK[stockSymbol] = { yes: {}, no: {} };
+    }
+}
 
-// export function createStockBalance(userId, stockSymbol) {
-//     if (!STOCK_BALANCES[userId]) {
-//       STOCK_BALANCES[userId] = {};
-//     }
+export function createStockBalance(userId, stockSymbol) {
+    if (!STOCK_BALANCES[userId]) {
+      STOCK_BALANCES[userId] = {};
+    }
   
-//     if (!STOCK_BALANCES[userId][stockSymbol]) {
-//       STOCK_BALANCES[userId][stockSymbol] = {
-//         yes: { quantity: 0, locked: 0 }, 
-//         no: { quantity: 0, locked: 0 }, 
-//       };
-//     }
-// }
+    if (!STOCK_BALANCES[userId][stockSymbol]) {
+      STOCK_BALANCES[userId][stockSymbol] = {
+        yes: { quantity: 0, locked: 0 }, 
+        no: { quantity: 0, locked: 0 }, 
+      };
+    }
+}
 

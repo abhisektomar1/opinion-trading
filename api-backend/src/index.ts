@@ -1,7 +1,10 @@
+import { minting } from './../../engine/src/services/minting';
 import express, { type Request, type Response } from "express";
 import { createClient } from "redis";
 import userRoutes from "./routes/userRoutes"
 import orderRoutes from "./routes/orderRoutes"
+import mintingRoute from "./routes/mintingRoute"
+
 import bodyParser from 'body-parser';
 import { RedisManager } from "./RedisManager";
 
@@ -50,6 +53,8 @@ app.use(checkRedisConnection);
 // Routes
 app.use('/user', userRoutes);
 app.use('/order', orderRoutes);
+app.use('/trade', mintingRoute);
+
 
 app.post('/symbol/create/:stockSymbol', async (req, res) => {
     const { stockSymbol } = req.params;
@@ -85,6 +90,8 @@ app.post('/symbol/create/:stockSymbol', async (req, res) => {
     }
      
   });
+
+  
 
 
 app.get("/", (req: Request, res: Response) => {
