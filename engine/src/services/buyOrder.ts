@@ -1,7 +1,7 @@
 import { client } from "..";
 import {  INR_BALANCES } from "../dataStore";
 
-export const createUsers = async (data: any) => {
+export const buyOrder = async (data: any) => {
     const { userId } = data;
     try {
         //@ts-ignore

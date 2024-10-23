@@ -68,6 +68,25 @@ app.post('/symbol/create/:stockSymbol', async (req, res) => {
     }
 });
 
+ app.post('/onramp/inr',async (req, res) => {
+      const { userId, amount } = req.body;
+      try {
+        const response: any = await RedisManager(
+            { userId: userId, amount:amount, type: "onRamp" },
+            "onRamp"
+        );
+        if (response.status === 200) {
+            res.status(200).json({ message: `Onramped ${userId} with amount ${amount}` });
+        } else {
+            res.status(400).json({ message: `Please verify yourself first` });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to onRamp amount request" });
+    }
+     
+  });
+
+
 app.get("/", (req: Request, res: Response) => {
     res.send("Hello, Express with Bun and TypeScript!");
 });

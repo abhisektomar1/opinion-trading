@@ -1,9 +1,12 @@
+import { cancel } from './services/cancel';
 import express, { type Request, type Response } from "express";
 import { createClient } from "redis";
 import bodyParser from "body-parser";
 import { createUsers } from "./services/CreateUser";
 import { createStockSymbol } from "./services/createStockSymbol";
 import { onRamp } from "./services/onRamp";
+import { sellOrder } from "./services/sellOrder";
+import { buyOrder } from "./services/buyORder";
 
 const app = express();
 app.use(bodyParser.json());
@@ -39,6 +42,15 @@ async function startServer() {
           case "onRamp":
             await onRamp(parseData);
             break;
+          case "sellOrder":
+            await sellOrder(parseData);
+            break;
+          case "buyOrder":
+            await buyOrder(parseData);
+            break;
+            case "cancel":
+              await cancel(parseData);
+              break;
 
           default:
             break;
@@ -46,8 +58,6 @@ async function startServer() {
         console.log(data, "recieved data");
       } catch (error) {
         console.error("Error processing submission:", error);
-        // Implement your error handling logic here. For example, you might want to push
-        // the submission back onto the queue or log the error to a file.
       }
     }
   } catch (error) {
@@ -56,7 +66,6 @@ async function startServer() {
 }
 
 startServer();
-
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, Express with Bun and TypeScript!");
