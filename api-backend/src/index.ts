@@ -91,8 +91,6 @@ app.post('/symbol/create/:stockSymbol', async (req, res) => {
      
   });
 
-  
-
 
 app.get("/", (req: Request, res: Response) => {
     res.send("Hello, Express with Bun and TypeScript!");
