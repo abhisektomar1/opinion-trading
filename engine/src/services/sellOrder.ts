@@ -1,5 +1,6 @@
 import { client } from "..";
 import { INR_BALANCES, ORDERBOOK, STOCK_BALANCES } from "../dataStore";
+import { publishOrderbookUpdate } from "../utils/Orderbook";
 
 export const sellOrder = async (data: any) => {
   const { userId, stockSymbol, quantity, price, stockType } = data;
@@ -38,6 +39,7 @@ export const sellOrder = async (data: any) => {
     orderbookEntry.orders[userId] += quantity;
 
     await client.publish("sellOrder", JSON.stringify({ status: 200 }));
+    await publishOrderbookUpdate(stockSymbol);
   } catch (error) {
     await client.publish(
       "createUser",

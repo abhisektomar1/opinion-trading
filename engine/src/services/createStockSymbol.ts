@@ -1,5 +1,6 @@
 import { client } from "..";
 import { ORDERBOOK } from "../dataStore";
+import { publishOrderbookUpdate } from "../utils/Orderbook";
 
 export const createStockSymbol = async (data: any) => {
   const { stockSymbol } = data;
@@ -13,6 +14,7 @@ export const createStockSymbol = async (data: any) => {
     } else {
       await client.publish("createStockSymbol", JSON.stringify({ status: 400 }));
     }
+    await publishOrderbookUpdate(stockSymbol);
   } catch (error) {
     await client.publish(
       "createStockSymbol",

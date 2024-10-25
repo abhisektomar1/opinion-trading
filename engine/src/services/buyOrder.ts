@@ -1,5 +1,6 @@
 import { client } from "..";
 import { INR_BALANCES, ORDERBOOK, STOCK_BALANCES } from "../dataStore";
+import { publishOrderbookUpdate } from "../utils/Orderbook";
 
 export const buyOrder = async (data: any) => {
   const { userId, stockSymbol, quantity, price, stockType } = data;
@@ -127,6 +128,7 @@ export const buyOrder = async (data: any) => {
         noOrderBook[price].orders[userId] =
           (noOrderBook[price].orders[userId] || 0) + remainingQuantity;
       }
+    await publishOrderbookUpdate(stockSymbol);
 
       return await client.publish(
         "buyOrder",
@@ -134,6 +136,8 @@ export const buyOrder = async (data: any) => {
       );
     } else {
       // Fully matched
+    await publishOrderbookUpdate(stockSymbol);
+
       return await client.publish(
         "buyOrder",
         JSON.stringify({
